@@ -1,0 +1,43 @@
+[
+    {
+      "id": 1,
+      "name": "Pizza",
+      "img": "./src/assets/pizza.jpg",
+      "introduce": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta asperiores veniam repellat unde debitis quisquam magnam magni ut deleniti!",
+      "quantity": 20,
+      "price": 50,
+      "number": 1,
+      "status": true
+    },
+    {
+      "id": 2, 
+      "name": "Hamburger",
+      "img": "./src/assets/Hamburger.jpg",
+      "introduce": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta asperiores veniam repellat unde debitis quisquam magnam magni ut deleniti!",
+      "quantity": 15,
+      "price": 30,
+      "number": 1,
+      "status": true
+    },
+    {
+      "id": 3, 
+      "name": "Bread",
+      "img": "./src/assets/bread.jpg",
+      "introduce": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta asperiores veniam repellat unde debitis quisquam magnam magni ut deleniti!",
+      "quantity": 50,
+      "price": 20,
+      "number": 1,
+      "status": true
+    },
+    {
+      "id": 4, 
+      "name": "Cake",
+      "img": "./src/assets/Cake.jpg",
+      "introduce": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta asperiores veniam repellat unde debitis quisquam magnam magni ut deleniti!",
+      "quantity": 10,
+      "price": 15,
+      "number": 1,
+      "status": true
+    }
+  ]
+  
