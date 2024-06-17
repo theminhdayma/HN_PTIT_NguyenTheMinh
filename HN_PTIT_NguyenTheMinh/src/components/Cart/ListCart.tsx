@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Cart from "./Cart";
 import swal from "sweetalert";
 
@@ -13,12 +13,15 @@ interface ProductType {
   status: boolean;
 }
 
-export default function ListCart() {
-  const [productListCart, setProductListCart] = useState<ProductType[]>(() => {
-    const products = localStorage.getItem("productListCart");
-    return products ? JSON.parse(products) : [];
-  });
+interface ListCartProps {
+  productListCart: ProductType[];
+  setProductListCart: React.Dispatch<React.SetStateAction<ProductType[]>>;
+}
 
+export default function ListCart({
+  productListCart,
+  setProductListCart
+}: ListCartProps) {
   useEffect(() => {
     const handleStorageChange = () => {
       const storedProductListCart = localStorage.getItem("productListCart");
@@ -32,7 +35,7 @@ export default function ListCart() {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, []);
+  }, [setProductListCart]);
 
   const handleDeleteProduct = (productId: number) => {
     const productToDelete = productListCart.find(
@@ -67,6 +70,17 @@ export default function ListCart() {
     });
   };
 
+  const handleUpdateProduct = (productId: number, newNumber: number) => {
+    const updatedProductListCart = productListCart.map((product) => {
+      if (product.id === productId) {
+        return { ...product, number: newNumber };
+      }
+      return product;
+    });
+    setProductListCart(updatedProductListCart);
+    localStorage.setItem("productListCart", JSON.stringify(updatedProductListCart));
+  };
+
   return (
     <div className="panel panel-danger">
       <div className="panel-heading">
@@ -75,6 +89,7 @@ export default function ListCart() {
       <Cart
         productListCart={productListCart}
         onDeleteProduct={handleDeleteProduct}
+        onUpdateProduct={handleUpdateProduct}
       />
     </div>
   );

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import productList from "./Product.json";
 import swal from "sweetalert";
 
 interface ProductType {
@@ -15,15 +14,19 @@ interface ProductType {
 
 interface ProductProps {
   onAddProduct: () => void;
+  productListCart: ProductType[];
+  setProductListCart: React.Dispatch<React.SetStateAction<ProductType[]>>;
+  productListLocal: ProductType[];
+  setProductListLocal: React.Dispatch<React.SetStateAction<ProductType[]>>;
 }
 
-export default function Products({ onAddProduct }: ProductProps) {
-  const [colorAdd, setColorAdd] = useState<boolean>(false);
-  const [productListCart, setProductListCart] = useState<ProductType[]>(() => {
-    const storedProductListCart = localStorage.getItem("productListCart");
-    return storedProductListCart ? JSON.parse(storedProductListCart) : [];
-  });
-
+export default function Products({
+  onAddProduct,
+  productListCart,
+  setProductListCart,
+  productListLocal,
+  setProductListLocal
+}: ProductProps) {
   const handleClick = (product: ProductType) => {
     const showProductIndex = productListCart.findIndex(
       (item) => item.id === product.id
@@ -33,8 +36,15 @@ export default function Products({ onAddProduct }: ProductProps) {
       if (productListCart[showProductIndex].number < product.quantity) {
         const updatedProductListCart = [...productListCart];
         updatedProductListCart[showProductIndex].number++;
-        updatedProductListCart[showProductIndex].quantity--;
+        const updatedProductListLocal = productListLocal.map((p) => {
+          if (p.id === product.id) {
+            return { ...p, quantity: p.quantity - 1 };
+          }
+          return p;
+        });
         setProductListCart(updatedProductListCart);
+        setProductListLocal(updatedProductListLocal);
+        localStorage.setItem("productList", JSON.stringify(updatedProductListLocal));
       } else {
         swal("Số lượng sản phẩm đã hết !!! ");
         return;
@@ -42,23 +52,30 @@ export default function Products({ onAddProduct }: ProductProps) {
     } else {
       const updatedProductListCart = [
         ...productListCart,
-        { ...product, number: 1 },
+        { ...product, number: 1, quantity: product.quantity - 1 },
       ];
+      const updatedProductListLocal = productListLocal.map((p) => {
+        if (p.id === product.id) {
+          return { ...p, quantity: p.quantity - 1 };
+        }
+        return p;
+      });
       setProductListCart(updatedProductListCart);
+      setProductListLocal(updatedProductListLocal);
+      localStorage.setItem("productList", JSON.stringify(updatedProductListLocal));
     }
 
     // Hiển thị modal
     onAddProduct();
   };
 
-  //Lưu lên local
   useEffect(() => {
     localStorage.setItem("productListCart", JSON.stringify(productListCart));
   }, [productListCart]);
 
   return (
     <div className="panel-body" id="list-product">
-      {productList.map((product: ProductType) => (
+      {productListLocal.map((product: ProductType) => (
         <div key={product.id}>
           <div className="media product">
             <div className="media-left">
@@ -78,14 +95,15 @@ export default function Products({ onAddProduct }: ProductProps) {
                 style={{
                   width: "100px",
                   height: "30px",
-                  backgroundColor: product.quantity === 1 ? "red" : "green",
+                  backgroundColor: product.quantity < 2 ? "red" : "green",
                   color: "white",
+                  fontSize: "18px",
                   border: 0,
                   cursor: "pointer",
                 }}
                 disabled={product.quantity === 0}
               >
-                ADD CART
+                {product.price} USD
               </button>
               <span
                 style={{
@@ -95,7 +113,7 @@ export default function Products({ onAddProduct }: ProductProps) {
                 }}
                 className="price"
               >
-                {product.price} USD
+                {product.quantity} sản phẩm
               </span>
             </div>
           </div>

@@ -14,18 +14,22 @@ interface ProductType {
 }
 
 interface ListProductProps {
-    onAddProduct: () => void;
-  }
+  onAddProduct: () => void;
+  productListCart: ProductType[];
+  setProductListCart: React.Dispatch<React.SetStateAction<ProductType[]>>;
+}
 
-export default function ListProduct({ onAddProduct }: ListProductProps) {
+export default function ListProduct({
+  onAddProduct,
+  productListCart,
+  setProductListCart
+}: ListProductProps) {
   const [productListLocal, setProductListLocal] =
-    useState<ProductType[]>(ProductData);
-  const [productList, setProductList] = useState<ProductType[]>(() => {
-    const products = localStorage.getItem("productList");
-    return products ? JSON.parse(products) : [];
-  });
+    useState<ProductType[]>(() => {
+      const storedProductList = localStorage.getItem("productList");
+      return storedProductList ? JSON.parse(storedProductList) : ProductData;
+    });
 
-  // Lưu dữ liệu lên local
   useEffect(() => {
     localStorage.setItem("productList", JSON.stringify(productListLocal));
   }, [productListLocal]);
@@ -35,7 +39,13 @@ export default function ListProduct({ onAddProduct }: ListProductProps) {
       <div className="panel-heading">
         <h1 className="panel-title">List Products</h1>
       </div>
-      <Products onAddProduct={onAddProduct} />
+      <Products
+        onAddProduct={onAddProduct}
+        productListCart={productListCart}
+        setProductListCart={setProductListCart}
+        productListLocal={productListLocal}
+        setProductListLocal={setProductListLocal}
+      />
     </div>
   );
 }

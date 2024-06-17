@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface ProductType {
   id: number;
@@ -14,9 +14,28 @@ interface ProductType {
 interface Props {
   productListCart: ProductType[];
   onDeleteProduct: (productId: number) => void;
+  onUpdateProduct: (productId: number, newNumber: number) => void;
 }
 
-export default function Cart({ productListCart, onDeleteProduct }: Props) {
+export default function Cart({ productListCart, onDeleteProduct, onUpdateProduct }: Props) {
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>(
+    productListCart.reduce((acc, product) => {
+      acc[product.id] = product.number;
+      return acc;
+    }, {} as { [key: number]: number })
+  );
+
+  const handleQuantityChange = (productId: number, newNumber: number) => {
+    setQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [productId]: newNumber,
+    }));
+  };
+
+  const handleUpdateClick = (productId: number) => {
+    onUpdateProduct(productId, quantities[productId]);
+  };
+
   const totalQuantity = productListCart.reduce(
     (total, product) => total + product.number,
     0
@@ -44,13 +63,16 @@ export default function Cart({ productListCart, onDeleteProduct }: Props) {
                 <input
                   name={`cart-item-quantity-${product.id}`}
                   type="number"
-                  value={product.number}
+                  value={quantities[product.id]}
+                  onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value))}
                 />
               </td>
               <td>
                 <a
                   className="label label-info update-cart-item"
                   data-product={product.id}
+                  onClick={() => handleUpdateClick(product.id)}
+                  style={{ cursor: "pointer" }}
                 >
                   Update
                 </a>
@@ -58,10 +80,7 @@ export default function Cart({ productListCart, onDeleteProduct }: Props) {
                   className="label label-danger delete-cart-item"
                   data-product={product.id}
                   onClick={() => onDeleteProduct(product.id)}
-                  style={{
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                  }}
+                  style={{ cursor: "pointer", marginLeft: "10px" }}
                 >
                   Delete
                 </a>
