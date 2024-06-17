@@ -61,6 +61,18 @@ export default function ListCart({
           "productListCart",
           JSON.stringify(updatedProductListCart)
         );
+
+        // Update productListLocal to increase the quantity in stock
+        const storedProductList = localStorage.getItem("productList");
+        const productListLocal = storedProductList ? JSON.parse(storedProductList) : [];
+        const updatedProductListLocal = productListLocal.map((product: ProductType) => {
+          if (product.id === productId) {
+            return { ...product, quantity: product.quantity + productToDelete.number };
+          }
+          return product;
+        });
+        localStorage.setItem("productList", JSON.stringify(updatedProductListLocal));
+
         swal("Sản phẩm đã được xóa khỏi giỏ hàng!", {
           icon: "success",
         });
@@ -71,6 +83,14 @@ export default function ListCart({
   };
 
   const handleUpdateProduct = (productId: number, newNumber: number) => {
+    const productToUpdate = productListCart.find((product) => product.id === productId);
+
+    if (!productToUpdate) {
+      return;
+    }
+
+    const difference = newNumber - productToUpdate.number;
+
     const updatedProductListCart = productListCart.map((product) => {
       if (product.id === productId) {
         return { ...product, number: newNumber };
@@ -79,6 +99,17 @@ export default function ListCart({
     });
     setProductListCart(updatedProductListCart);
     localStorage.setItem("productListCart", JSON.stringify(updatedProductListCart));
+
+    // Update productListLocal to adjust the quantity in stock
+    const storedProductList = localStorage.getItem("productList");
+    const productListLocal = storedProductList ? JSON.parse(storedProductList) : [];
+    const updatedProductListLocal = productListLocal.map((product: ProductType) => {
+      if (product.id === productId) {
+        return { ...product, quantity: product.quantity - difference };
+      }
+      return product;
+    });
+    localStorage.setItem("productList", JSON.stringify(updatedProductListLocal));
   };
 
   return (
